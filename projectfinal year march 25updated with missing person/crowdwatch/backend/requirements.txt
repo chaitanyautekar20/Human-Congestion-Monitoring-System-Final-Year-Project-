@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+opencv-python-headless
+torch
+torchvision
+ultralytics
+deep_sort_realtime
+faiss-cpu
+numpy
+pillow
+python-dotenv

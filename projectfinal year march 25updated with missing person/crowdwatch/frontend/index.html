@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Human Congestion Monitoring</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+        </svg>
+        Human Congestion Monitoring
+      </div>
+      <span class="tagline">Real-time Crowd Monitoring</span>
+    </div>
+    <div class="header-right">
+      <div id="missingBadge" class="missing-badge hidden">🔴 Missing Person Tracking ON</div>
+      <div class="ws-status" id="wsStatus"><span class="dot dot-off"></span> Disconnected</div>
+    </div>
+  </header>
+
+  <main class="layout">
+
+    <!-- ══ LEFT PANEL ══ -->
+    <section class="panel-left">
+
+      <!-- Stat cards -->
+      <div class="stat-row">
+        <div class="stat-card accent">
+          <div class="stat-label">Live People Count</div>
+          <div class="stat-value" id="totalCount">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Threshold</div>
+          <div class="stat-value" id="thresholdDisplay">30</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Threshold Mode</div>
+          <div class="stat-value small" id="alertMode">Manual</div>
+        </div>
+      </div>
+
+      <!-- Live density chart -->
+      <div class="card">
+        <div class="card-header">
+          <span>Live Crowd Density</span>
+          <span class="live-pill" id="liveTag">● LIVE</span>
+        </div>
+        <div class="chart-wrap"><canvas id="densityChart"></canvas></div>
+      </div>
+
+      <!-- Webcam -->
+      <div class="card">
+        <div class="card-header">
+          <span>Webcam</span>
+          <div class="toggle-group">
+            <button id="webcamStartBtn" class="btn btn-green">▶ Start</button>
+            <button id="webcamStopBtn" class="btn btn-red" disabled>■ Stop</button>
+          </div>
+        </div>
+        <div id="webcamStatus" class="status-bar status-off">Camera is off</div>
+        <div id="webcamCount" class="cam-count hidden">
+          <span class="count-label">People detected:</span>
+          <span class="count-val" id="webcamPeopleCount">0</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ══ RIGHT PANEL ══ -->
+    <section class="panel-right">
+
+      <!-- Threshold control -->
+      <div class="card">
+        <div class="card-header"><span>Crowd Threshold</span></div>
+        <div class="threshold-section">
+
+          <!-- Manual -->
+          <div class="threshold-block">
+            <div class="threshold-block-title">Manual — set by count</div>
+            <div class="input-group">
+              <input type="number" id="thresholdInput" class="input-num" value="30" min="1" max="9999" placeholder="count">
+              <button id="setThresholdBtn" class="btn btn-primary">Set</button>
+            </div>
+          </div>
+
+          <!-- Area-based auto -->
+          <div class="threshold-block">
+            <div class="threshold-block-title">Auto — by area (km²)
+              <span class="hint">WHO: 4 people/m²</span>
+            </div>
+            <div class="input-group">
+              <input type="number" id="areaInput" class="input-num" step="0.0001" min="0.0001" placeholder="km²">
+              <button id="setAreaBtn" class="btn btn-primary">Set</button>
+            </div>
+            <div id="areaCalcInfo" class="threshold-info hidden"></div>
+          </div>
+
+          <!-- Rolling auto -->
+          <div class="threshold-row">
+            <label>Rolling Auto <span class="hint">(mean + 1.5σ)</span></label>
+            <label class="switch">
+              <input type="checkbox" id="autoThresholdToggle">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="threshold-info">
+            Alert fires when count ≥ <strong id="thresholdInfoVal">30</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Missing person -->
+      <div class="card">
+        <div class="card-header">
+          <span>Missing Person</span>
+          <button id="clearMissingBtn" class="btn btn-ghost btn-sm hidden">Clear</button>
+        </div>
+        <div class="missing-section">
+          <p class="missing-hint">Upload a photo to track across live webcam and video analysis.</p>
+          <input type="file" id="missingSetFile" accept="image/*" class="file-input">
+          <button id="setMissingBtn" class="btn btn-primary full-width mt-8">Activate Tracking</button>
+          <div id="missingStatus" class="missing-status hidden"></div>
+
+          <div class="divider"></div>
+          <p class="missing-hint">One-shot search in stored ReID index:</p>
+          <input type="file" id="missingSearchFile" accept="image/*" class="file-input">
+          <button id="searchMissingBtn" class="btn btn-ghost full-width mt-8">Search Index</button>
+          <div id="missingResults" class="missing-results"></div>
+        </div>
+      </div>
+
+      <!-- Alerts feed -->
+      <div class="card flex-grow">
+        <div class="card-header">
+          <span>Alerts</span>
+          <button class="btn btn-ghost btn-sm" id="clearAlertsBtn">Clear</button>
+        </div>
+        <div id="alertsFeed" class="alerts-feed"></div>
+      </div>
+
+    </section>
+  </main>
+
+<script src="/dashboard.js"></script>
+</body>
+</html>
