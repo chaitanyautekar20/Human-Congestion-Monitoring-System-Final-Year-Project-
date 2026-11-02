@@ -4,14 +4,15 @@ __pycache__/
 venv/
 .venv/
 
+# Database
+*.db
+
+# Uploaded videos
+backend/uploads/
+*.mp4
+
 # Environment variables
 .env
 
 # IDE
 .vscode/
-
-# Model files
-*.pt
-
-# System files
-.DS_Store
